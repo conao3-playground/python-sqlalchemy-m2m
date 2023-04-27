@@ -82,7 +82,13 @@ class Book(Base):
     book_id = sa.Column(sa.UUID(), primary_key=True)
     title = sa.Column(sa.String(), nullable=False)
 
-    authors = sa_orm.relationship("Author", secondary=lambda: BookAuthor.__table__, backref=sa_orm.backref("books"), viewonly=True)
+    authors = sa_orm.relationship(
+        "Author",
+        secondary=lambda: BookAuthor.__table__,
+        backref=sa_orm.backref("books"),
+        order_by=lambda: sa.desc(BookAuthor.position),
+        viewonly=True,
+    )
 
 
 class Author(Base):
@@ -179,7 +185,7 @@ def main5():
     print(books)
 
     for book in books:
-        print(f'{book.book_id}: {book.authors}')
+        print(f'{book.book_id}: {[elm.name for elm in book.authors]}')
 
 
 def main6():
@@ -203,7 +209,7 @@ def main6():
     print(books)
 
     for book in books:
-        print(f'{book.book_id}: {book.authors}')
+        print(f'{book.book_id}: {[elm.name for elm in book.authors]}')
 
 
 def parse_args(fn_mapping: dict[str, Callable[[], None]]) -> argparse.Namespace:
