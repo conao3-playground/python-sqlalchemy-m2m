@@ -1,0 +1,40 @@
+version: 1
+
+disable_existing_loggers: False
+
+formatters:
+  simpleFormatter:
+    format: '[%(levelname)s] %(asctime)s - %(name)s - %(message)s'
+
+  dbFormatter:
+    format: '■ %(message)s;'
+
+handlers:
+  consoleHandler:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: simpleFormatter
+
+  dbFileHandler:
+    class: logging.FileHandler
+    level: INFO
+    formatter: dbFormatter
+    filename: /tmp/m2m_db.log
+
+loggers:
+  sqlalchemy_m2m: &logger
+    level: INFO
+    handlers: [consoleHandler]
+
+  sqlalchemy_m2m.main/db:
+    level: INFO
+    handlers: [dbFileHandler]
+    propagate: False
+
+  sqlalchemy: *logger
+
+  sqlalchemy.orm.mapper.Mapper: &warning
+    level: WARNING
+
+  sqlalchemy.orm.relationships.RelationshipProperty: *warning
+  sqlalchemy.orm.strategies.LazyLoader: *warning
